@@ -14,53 +14,26 @@ from telethon import TelegramClient, sync, events
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest
 
-# Define the SCOPES. If modifying it, delete the token.pickle file.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-# get your api_id, api_hash, token
-# from telegram as described above
-def findChannelID(client: TelegramClient, channelTitle):
-    for dialog in client.iter_dialogs():
-        if not dialog.is_group and dialog.is_channel:
-            if channelTitle == dialog.title:
-                return dialog.id
-def findChannelEntity(client: TelegramClient, channelTitle):
-    channelID = findChannelID(client, channelTitle)
-    channelEntity=client.get_entity(channelID)
-
-    return channelEntity
-def telegramJob():
-    
+def telegramJob(value):
     api_id = '9337267'
     api_hash = '6596d2e9a28d688929762bc7af6727ec'
-    token = 'bot token'
-    message = "Working..."
-    channel = '1982970708'
-    channelEntity = findChannelEntity(TelegramClient, 'Ai')
- # your phone number
+    message = value
     phone = '+33640062336'
     client = TelegramClient('session', api_id, api_hash)
     client.connect()
     if not client.is_user_authorized():
-  
         client.send_code_request(phone)
-     
-    # signing in the client
         client.sign_in(phone, input('Enter the code: '))
+
     try:
-        #client(ImportChatInviteRequest(channel))
-    # receiver user_id and access_hash, use
-    # my user_id and access_hash for reference
-        receiver = InputPeerUser('user_id', 'user_hash')
-        send_as = 'peepoo ai'
-    # sending message using telegram client
-        client.send_message(channelEntity, 'hello to myself')
+        for dialog in client.iter_dialogs():
+            if not dialog.is_group and dialog.is_channel:
+                if 'Ai' == dialog.title:
+                    id = dialog.id
+        client.send_message(id, message)
     except Exception as e:
-     
-    # there may be many error coming in while like peer
-    # error, wrong access_hash, flood_error, etc
         print(e);
- 
-# disconnecting the telegram session
     client.disconnect()
 
 def getEmails():
@@ -68,7 +41,6 @@ def getEmails():
     # If no valid token found, we will create one.
     creds = None
 
-    # The file token.pickle contains the user access token.
     # Check if it exists
     if os.path.exists('token.pickle'):
 
@@ -94,54 +66,34 @@ def getEmails():
     # request a list of all the messages
     result = service.users().messages().list(userId='me').execute()
 
-    # We can also pass maxResults to get any number of emails. Like this:
     result = service.users().messages().list(maxResults=200, userId='me').execute()
     messages = result.get('messages')
 
-    # messages is a list of dictionaries where each dictionary contains a message id.
-
-    # iterate through all the messages
     for msg in messages:
-        # Get the message from its id
         txt = service.users().messages().get(userId='me', id=msg['id']).execute()
-
-        # Use try-except to avoid any Errors
-            # Get value of 'payload' from dictionary 'txt'
         payload = txt['payload']
-        
         headers = payload['headers']
         sender = ''
         body = ''
-        
-        if 'cryptohawk.ai' in headers[14]['value']:
-            sender = 'cryptohawk.ai'
-            # here parse the string with the data I want 
-            # get the time if its 10 minutes ago max
-            body = base64.b64decode(payload['body']['data'][100:300])
-        #for d in headers:
-        #    if d['name'] == 'Subject':
-        #        subject = d['value']
-        #    if d['name'] == 'From':
-        #        sender = d['value']
 
-            # The Body of the message is in Encrypted format. So, we have to decode it.
-            # Get the data and decode it with base 64 decoder.
-        #parts = payload.get('parts')[0]
-        #data = parts['body']['data']
-        #data = data.replace("-","+").replace("_","/")
-        
-        #decoded_data = 'grosse pute' #base64.b64decode(data)
-            # Now, the data obtained is in lxml. So, we will parse
-            # it with BeautifulSoup library
-        #soup = BeautifulSoup(decoded_data , "lxml")
-        #print('test', parts)
-        #body = soup.body()
+        #print('Subject', headers[16]['value'])
+        #print('time', headers[1]['value'])
+        #print('from', headers[17]['value'])
+        if 'TradingView <noreply@tradingview.com>' in headers[17]['value'] and 'Trade' in headers[16]['value']:
+            sender = 'TradingView <noreply@tradingview.com>'
+            body = base64.b64decode(payload['body']['data'])
 
-        if sender == 'cryptohawk.ai':
+        if sender == 'TradingView <noreply@tradingview.com>':
             print("From: ", sender)
             print("Message: ", body)
-            print('\n')
+            # DO SOME CHANGE FOR OTHER CRYPTO THAN BTC
+            strBody = str(body)
+            crypto = strBody[2: 8]
+            tp = strBody[24: 29]
+            sl = strBody[37: 42]
+            message = '📈 Nouvelle prediction sur le ' + crypto + '! je vous conseille de rentrer un trade en short (a la baisse) maintenant\n Stop loss: ' + sl + '\n Take profit: ' + tp + ' !\n\n Bonne chance a tous 🍀'
+            #print(message)
+            
+            telegramJob(message)
 
-
-#getEmails()
-telegramJob()
+getEmails()
