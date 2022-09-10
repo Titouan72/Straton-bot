@@ -13,8 +13,12 @@ from telethon.tl.types import InputPeerUser, InputPeerChannel
 from telethon import TelegramClient, sync, events
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest
+from apscheduler.schedulers.background import BlockingScheduler
+from datetime import datetime
+import pytz
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+sched = BlockingScheduler()
 def telegramJob(value):
     api_id = '9337267'
     api_hash = '6596d2e9a28d688929762bc7af6727ec'
@@ -37,6 +41,7 @@ def telegramJob(value):
     client.disconnect()
 
 def getEmails():
+    print('start')
     # Variable creds will store the user access token.
     # If no valid token found, we will create one.
     creds = None
@@ -68,32 +73,37 @@ def getEmails():
 
     result = service.users().messages().list(maxResults=200, userId='me').execute()
     messages = result.get('messages')
-
+    dt = datetime.now()
+    my_timezone = pytz.timezone('Europe/Paris')
     for msg in messages:
+        
         txt = service.users().messages().get(userId='me', id=msg['id']).execute()
         payload = txt['payload']
         headers = payload['headers']
         sender = ''
-        body = ''
 
-        #print('Subject', headers[16]['value'])
-        #print('time', headers[1]['value'])
-        #print('from', headers[17]['value'])
-        if 'TradingView <noreply@tradingview.com>' in headers[17]['value'] and 'Trade' in headers[16]['value']:
-            sender = 'TradingView <noreply@tradingview.com>'
-            body = base64.b64decode(payload['body']['data'])
-
-        if sender == 'TradingView <noreply@tradingview.com>':
-            print("From: ", sender)
-            print("Message: ", body)
-            # DO SOME CHANGE FOR OTHER CRYPTO THAN BTC
-            strBody = str(body)
-            crypto = strBody[2: 8]
-            tp = strBody[24: 29]
-            sl = strBody[37: 42]
-            message = '📈 Nouvelle prediction sur le ' + crypto + '! je vous conseille de rentrer un trade en short (a la baisse) maintenant\n Stop loss: ' + sl + '\n Take profit: ' + tp + ' !\n\n Bonne chance a tous 🍀'
-            #print(message)
-            
-            telegramJob(message)
+        if len(headers) > 16:
+            if 'TradingView <noreply@tradingview.com>' in headers[17]['value'] and 'Trade' in headers[16]['value'] and 'sl' in headers[16]['value']:
+                sender = 'TradingView <noreply@tradingview.com>'
+                t1 = headers[1]['value'][91:93]
+                t2 = str(dt)[11:13]
+                t3 = int(t2) - int(t1)
+                print(int(t2))
+                print(int(t1))
+                print(t3)
+                if sender == 'TradingView <noreply@tradingview.com>' and t3 == 9:
+                    #print('2')
+                    strBody = str(headers[16]['value'])
+                    crypto = strBody[8:15]
+                    tp = strBody[25:30]
+                    sl = strBody[34:40]
+                    message = '⏰ \nNouvelle prediction sur le ' + crypto + '! \nJe vous conseille de rentrer un trade en short (a la baisse) maintenant\n \n❎ Stop loss: ' + sl + '$\n✅ Take profit: ' + tp + '$ !\n\nBonne chance a tous \n🍀'
+                    #print(message)
+                    
+                    #telegramJob(message)
+                else:
+                    print('We do not want multiple same prediction in the telegram so wait an hour to get another alarm')    
 
 getEmails()
+#sched.add_job(getEmails(), 'interval', seconds =600)
+
