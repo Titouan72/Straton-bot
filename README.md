@@ -24,4 +24,4 @@ This application is made with Python and EC2 instance, Telegram API.
 • Actually getting only BTC/USD as crypto need to do really few change otherwise.    
 
 ---------------------------------------------
-												 Made as roselikerose
+											 Made as roselikerose
