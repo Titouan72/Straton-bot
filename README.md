@@ -14,10 +14,10 @@ This application is made with Python and EC2 instance, Telegram API.
 
 ---------------------------------------------
 
-##Nota bene:        
-####• Run this app once in an hour or you will get an error message.
-####• Actually getting only tradingview as furnisher need to do really few change otherwise.
-####• Actually getting only BTC/USD as crypto need to do really few change otherwise.
+##Nota bene:          
+• Run this app once in an hour or you will get an error message.  
+• Actually getting only tradingview as furnisher need to do really few change otherwise.    
+• Actually getting only BTC/USD as crypto need to do really few change otherwise.    
 
 ---------------------------------------------
 												 Made as roselikerose
