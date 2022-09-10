@@ -19,4 +19,5 @@ Nota bene:
 • Actually getting only tradingview as furnisher need to do really few change otherwise
 • Actually getting only BTC/USD as crypto need to do really few change otherwise
 
-----------------Made as roselikerose---------
+---------------------------------------------
+												 Made as roselikerose
