@@ -41,7 +41,18 @@ def telegramJob(value):
     client.disconnect()
 
 def getEmails():
-    print('start')
+    print(r"""
+
+  /$$$$$$   /$$                          /$$                                 /$$        /$$$$$$ 
+ /$$__  $$ | $$                         | $$                               /$$$$       /$$$_  $$
+| $$  \__//$$$$$$    /$$$$$$  /$$$$$$  /$$$$$$    /$$$$$$  /$$$$$$$       |_  $$      | $$$$\ $$
+|  $$$$$$|_  $$_/   /$$__  $$|____  $$|_  $$_/   /$$__  $$| $$__  $$        | $$      | $$ $$ $$
+ \____  $$ | $$    | $$  \__/ /$$$$$$$  | $$    | $$  \ $$| $$  \ $$        | $$      | $$\ $$$$
+ /$$  \ $$ | $$ /$$| $$      /$$__  $$  | $$ /$$| $$  | $$| $$  | $$        | $$      | $$ \ $$$
+|  $$$$$$/ |  $$$$/| $$     |  $$$$$$$  |  $$$$/|  $$$$$$/| $$  | $$       /$$$$$$ /$$|  $$$$$$/
+ \______/   \___/  |__/      \_______/   \___/   \______/ |__/  |__/      |______/|__/ \______/ 
+                                                                                                
+                """)
     # Variable creds will store the user access token.
     # If no valid token found, we will create one.
     creds = None
@@ -74,7 +85,6 @@ def getEmails():
     result = service.users().messages().list(maxResults=200, userId='me').execute()
     messages = result.get('messages')
     dt = datetime.now()
-    my_timezone = pytz.timezone('Europe/Paris')
     for msg in messages:
         
         txt = service.users().messages().get(userId='me', id=msg['id']).execute()
@@ -88,9 +98,6 @@ def getEmails():
                 t1 = headers[1]['value'][91:93]
                 t2 = str(dt)[11:13]
                 t3 = int(t2) - int(t1)
-                print(int(t2))
-                print(int(t1))
-                print(t3)
                 if sender == 'TradingView <noreply@tradingview.com>' and t3 == 9:
                     #print('2')
                     strBody = str(headers[16]['value'])
@@ -98,9 +105,8 @@ def getEmails():
                     tp = strBody[25:30]
                     sl = strBody[34:40]
                     message = '⏰ \nNouvelle prediction sur le ' + crypto + '! \nJe vous conseille de rentrer un trade en short (a la baisse) maintenant\n \n❎ Stop loss: ' + sl + '$\n✅ Take profit: ' + tp + '$ !\n\nBonne chance a tous \n🍀'
-                    #print(message)
-                    
-                    #telegramJob(message)
+                    print(message)
+                    telegramJob(message)
                 else:
                     print('We do not want multiple same prediction in the telegram so wait an hour to get another alarm')    
 
