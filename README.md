@@ -1,10 +1,12 @@
+```python
   _________ __                 __                   ____    _______     
  /   _____//  |_____________ _/  |_  ____   ____   /_   |   \   _  \    
  \_____  \\   __\_  __ \__  \\   __\/  _ \ /    \   |   |   /  /_\  \   
  /        \|  |  |  | \// __ \|  | (  <_> )   |  \  |   |   \  \_/   \  
 /_______  /|__|  |__|  (____  /__|  \____/|___|  /  |___| /\ \_____  /  
         \/                  \/                 \/         \/       \/     
-                                                                                                  
+                                                                      
+```                            
 ---------------------------------------------
 Programme of an automated bot which sends predictions for daytrading on a telegram canal according to some indicator (McGinley, Supertrend, EMA…). 
 
