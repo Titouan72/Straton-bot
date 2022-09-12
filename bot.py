@@ -108,7 +108,7 @@ def getEmails():
                     print(message)
                     telegramJob(message)
                 else:
-                    print('We do not want multiple same prediction in the telegram so wait an hour to get another alarm')    
+                    print('No prediction this hour')    
 
 getEmails()
 #sched.add_job(getEmails(), 'interval', seconds =600)
